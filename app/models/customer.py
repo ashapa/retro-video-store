@@ -7,4 +7,4 @@ class Customer(db.Model):
     postal_code = db.Column(db.String)
     phone = db.Column(db.String)
 
-    # videos = db.relationship("Video", secondary="rentals")
+    # videos = db.relationship("Rental", back_populates="customer")

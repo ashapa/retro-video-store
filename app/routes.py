@@ -202,3 +202,18 @@ def delete_video(id):
     db.session.delete(video)
     db.session.commit()
     return {"id": video.id}, 200
+
+
+# --------------------------------
+# ----------- RENTALS ----------
+# --------------------------------
+
+# CHECK OUT A VIDEO TO A CUSTOMER
+@rentals_bp.route("/check-out", methods=["POST"])
+def checkout_video():
+    pass
+
+# CHECK IN A VIDEO TO A CUSTOMER
+@rentals_bp.route("/check-in", methods=["POST"])
+def checkin_video():
+    pass
