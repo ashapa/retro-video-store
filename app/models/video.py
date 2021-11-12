@@ -6,4 +6,9 @@ class Video(db.Model):
     release_date = db.Column(db.DateTime)
     total_inventory = db.Column(db.Integer)
     
-    # customers = relationship("Customer", secondary="rentals")
+    
+    
+    available_inventory = db.Column(db.Integer, nullable=True)
+    customers = db.relationship("Customer", secondary="rentals")
+    
+    
