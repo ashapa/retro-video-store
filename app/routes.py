@@ -10,6 +10,8 @@ from datetime import datetime, timedelta
 customers_bp = Blueprint("customers", __name__, url_prefix="/customers")
 videos_bp = Blueprint("videos", __name__, url_prefix="/videos")
 rentals_bp = Blueprint("rentals", __name__, url_prefix="/rentals")
+
+
 # --------------------------------
 # ----------- CUSTOMERS ----------
 # --------------------------------
@@ -25,7 +27,7 @@ def get_customers():
             "id": customer.id,
             "name": customer.name,
             "registered_at": datetime.now(), 
-            "postal_code": customer.postal_code, # Assertion error --> maybe change to str(customer.postal_code)
+            "postal_code": customer.postal_code, 
             "phone": customer.phone})
         
     return jsonify(customers_response), 200
@@ -44,8 +46,10 @@ def create_customer():
     new_customer = Customer(name = request_body["name"], 
                             postal_code = request_body["postal_code"], 
                             phone = request_body["phone"])
+    
     db.session.add(new_customer)
     db.session.commit()
+    
     new_customer_response = {
         "id": new_customer.id,
         "name": new_customer.name,
@@ -54,6 +58,7 @@ def create_customer():
         "phone": new_customer.phone
         }
     return jsonify(new_customer_response), 201
+
 
 # GET CUSTOMER BY ID
 @customers_bp.route("/<id>", methods=["GET"])
@@ -87,6 +92,7 @@ def update_customer(id):
             return {"details": "Request body must include postal_code."}, 400
         elif "phone" not in request_body:
             return {"details": "Request body must include phone."}, 400
+    
     customer.name=request_body["name"] 
     customer.postal_code=request_body["postal_code"] 
     customer.phone=request_body["phone"] 
@@ -97,8 +103,7 @@ def update_customer(id):
         "name": customer.name,
         "registered_at": datetime.now(),
         "postal_code": customer.postal_code,
-        "phone": customer.phone
-    }, 200
+        "phone": customer.phone}, 200
 
 
 # DELETE CUSTOMER BY ID
@@ -112,9 +117,11 @@ def delete_customer(id):
         db.session.commit()
         return jsonify({"id": customer.id}), 200
 
+
 # --------------------------------
 # ----------- VIDEOS ----------
 # --------------------------------
+
 
 # GET ALL VIDEOS
 @videos_bp.route("", methods=["GET"])
@@ -128,6 +135,8 @@ def get_videos():
             "release_date": datetime.now(), 
             "total_inventory": video.total_inventory})
     return jsonify(videos_response), 200
+
+
 # CREATE VIDEO
 @videos_bp.route("", methods=["POST"])
 def create_video():
@@ -152,6 +161,7 @@ def create_video():
             }
         return jsonify(new_video_response), 201
 
+
 # GET VIDEO BY ID
 @videos_bp.route("/<id>", methods=["GET"])
 def get_video(id):
@@ -165,8 +175,8 @@ def get_video(id):
                 "id": video.id,
                 "title": video.title,
                 "release_date": datetime.now(), 
-                "total_inventory": video.total_inventory
-            }
+                "total_inventory": video.total_inventory}
+
 
 # UPDATE VIDEO BY ID
 @videos_bp.route("/<id>", methods=["PUT"])
@@ -190,8 +200,8 @@ def update_video(id):
             "id": video.id,
             "title": video.title,
             "release_date": datetime.now(), 
-            "total_inventory": video.total_inventory
-        }, 200
+            "total_inventory": video.total_inventory}, 200
+
 
 # DELETE VIDEO BY ID
 @videos_bp.route("/<id>", methods=["DELETE"])
@@ -204,32 +214,26 @@ def delete_video(id):
     return {"id": video.id}, 200
 
 
-
-
 # --------------------------------
 # ----------- RENTALS ----------
 # --------------------------------
 
-# POST /rentals/check-out 
 
-@rentals_bp.route("/check_out", methods=["POST"])
+# POST /rentals/check-out 
+@rentals_bp.route("/check-out", methods=["POST"])
 def checkout_video():
     request_body = request.get_json()
     
-    customer_id=request_body["customer_id"]
-    video_id=request_body["video_id"]
-    
-    if customer_id not in request_body:
-        return 400
-    elif "video_id" not in request_body:
-        return 400
-    
-    customer = Customer.query.get(customer_id)
-    video = Video.query.get(video_id)
-    
+    customer = Customer.query.get(request_body["customer_id"])
+    video = Video.query.get(request_body["video_id"])
+   
     #check if customer and video exist
     if customer is None or video is None:
-        make_response("", 404)
+        return make_response("", 404)
+    
+    if "customer_id" not in request_body or "video_id" not in request_body:
+        return make_response("", 400)
+    
     
     current_rental = Rental.query.filter_by(video_id=video.id).count()
     video.available_inventory = video.total_inventory - current_rental
