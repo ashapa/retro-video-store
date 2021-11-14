@@ -5,18 +5,13 @@ class Rental(db.Model):
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), primary_key=True, nullable=False)
     video_id = db.Column(db.Integer, db.ForeignKey('video.id'), primary_key=True, nullable=False)
     due_date = db.Column(db.DateTime)
-    # checked_in = db.Column(db.Boolean, default=False)
-    
-    
+    checked_in = db.Column(db.Boolean, default=False)
     
     
     
     
     # videos_checked_out_count = db.Column(db.Integer)
     # available_inventory = db.Column(db.Integer)
-    
-    # customer = db.relationship("Customer", backref="rentals")
-    # video = db.relationship("Video", backref="rentals")
     
     #rental checked out   
     # def to_json(self, customer, video):
