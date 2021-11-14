@@ -305,21 +305,3 @@ def checkin_video():
         "video_id": rental.video_id,
         "videos_checked_out_count": videos_checkout_by_customer, "available_inventory": available_inventory}), 200
     
-
-
-
-    # rental = Rental.query.filter(
-    #     Rental.customer_id == request_body["customer_id"], Rental.video_id == request_body["video_id"], Rental.checked_in_status != "checked-in").scalar()
-    # rental.checked_in_status = "checked_in"
-    # db.session.commit()
-    # videos_checked_out_by_customer = Rental.query.filter(
-    #     Rental.customer_id == request_body["customer_id"], Rental.checked_in_status != "checked_in").count()
-    # video = Video.query.filter_by(id=request_body["video_id"]).scalar()
-    # copies_checked_out_count = Rental.query.filter(
-    #     Rental.video_id == request_body["video_id"], Rental.checked_in_status != "checked_in").count()
-    # return {
-    #     "customer_id": rental.customer_id,
-    #     "video_id": rental.video_id,
-    #     "videos_checked_out_count": videos_checked_out_by_customer,
-    #     "available_inventory": video.total_inventory - copies_checked_out_count
-    # }, 200
