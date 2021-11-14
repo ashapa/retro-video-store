@@ -251,7 +251,8 @@ def checkout_video():
         due_date = datetime.now() + timedelta(days=7), 
         checked_in = False)
     
-    # videos_checked_out_nums -= 1
+    videos_checked_out_nums += 1
+    available_video_inventory -= 1
     
     db.session.add(new_rental)
     db.session.commit()
@@ -262,7 +263,37 @@ def checkout_video():
         "due_date": new_rental.due_date,
         "videos_checked_out_count": videos_checked_out_nums, 
         "available_inventory": available_video_inventory}), 200
+
+
+
+# POST /rentals/check-in 
+@rentals_bp.route("/check-in", methods=["POST"])
+def checkin_video():
+    request_body = request.get_json() 
+
+    customer = Customer.query.get(request_body["customer_id"])
+    video = Video.query.get(request_body["video_id"])
+
+    if customer is None:
+        return make_response({"message": f"Customer {request_body['customer_id']} was not found"}, 404)     
+    if video is None:
+        return make_response({"message": f"Video {request_body['video_id']} was not found"}, 404)
+  
     
-    # return jsonify(new_rental.to_json(customer, video)), 200
+    if video not in customer.videos: 
+        return make_response({"message": f"No outstanding rentals for customer {request_body['customer_id']} and video {request_body['video_id']}"}), 400
+    
+    
+    videos_out_nums = Rental.query.filter_by(video.id).count()
+    
+    rented_video = Rental.query.filter_by(Rental.video.id).first()
+ 
+    db.session.commit()
+
+    return jsonify({
+        "customer_id": customer.customer_id,
+        "video_id": video.video_id,
+        "videos_checked_out_count": videos_out_nums,
+        "available_inventory": video.available_inventory}), 200
 
 

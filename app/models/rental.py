@@ -8,11 +8,6 @@ class Rental(db.Model):
     checked_in = db.Column(db.Boolean, default=False)
     
     
-    
-    
-    # videos_checked_out_count = db.Column(db.Integer)
-    # available_inventory = db.Column(db.Integer)
-    
     #rental checked out   
     # def to_json(self, customer, video):
     #     return{
