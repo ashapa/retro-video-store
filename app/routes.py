@@ -270,7 +270,10 @@ def checkout_video():
 @rentals_bp.route("/check-in", methods=["POST"])
 def checkin_video():
     request_body = request.get_json() 
-
+    
+    if "customer_id" not in request_body or "video_id" not in request_body:
+        return jsonify({"message": "must provide video and customer id"}), 400
+    
     customer = Customer.query.get(request_body["customer_id"])
     video = Video.query.get(request_body["video_id"])
 
@@ -279,21 +282,23 @@ def checkin_video():
     if video is None:
         return make_response({"message": f"Video {request_body['video_id']} was not found"}, 404)
   
-    
     if video not in customer.videos: 
         return make_response({"message": f"No outstanding rentals for customer {request_body['customer_id']} and video {request_body['video_id']}"}), 400
     
+    rented_video = Rental.query.filter_by(video_id==request_body["video_id"]).first()
+
+    videos_checked_out_nums = Rental.query.filter_by(video_id=request_body["video_id"], checked_in = False).count()
+    available_video_inventory = video.total_inventory - videos_checked_out_nums
     
-    videos_out_nums = Rental.query.filter_by(video.id).count()
-    
-    rented_video = Rental.query.filter_by(Rental.video.id).first()
+    videos_checked_out_nums -= 1
+    available_video_inventory += 1
  
     db.session.commit()
 
     return jsonify({
         "customer_id": customer.customer_id,
         "video_id": video.video_id,
-        "videos_checked_out_count": videos_out_nums,
-        "available_inventory": video.available_inventory}), 200
+        "videos_checked_out_count": videos_checked_out_nums,
+        "available_inventory": available_video_inventory}), 200
 
 
