@@ -146,8 +146,8 @@ def create_video():
         elif "total_inventory" not in request_body:
             return {"details": "Request body must include total_inventory."}, 400
         new_video = Video(title=request_body["title"],
-                          release_date=request_body["release_date"],
-                          total_inventory=request_body["total_inventory"])
+                        release_date=request_body["release_date"],
+                        total_inventory=request_body["total_inventory"])
         db.session.add(new_video)
         db.session.commit()
         new_video_response = {
