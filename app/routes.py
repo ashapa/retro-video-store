@@ -15,7 +15,6 @@ rentals_bp = Blueprint("rentals", __name__, url_prefix="/rentals")
 # --------------------------------
 
 
-
 # GET ALL CUSTOMERS
 @customers_bp.route("", methods=["GET"])
 def get_customers():
@@ -121,7 +120,6 @@ def delete_customer(id):
 # --------------------------------
 
 
-
 # GET ALL VIDEOS
 @videos_bp.route("", methods=["GET"])
 def get_videos():
@@ -148,8 +146,8 @@ def create_video():
         elif "total_inventory" not in request_body:
             return {"details": "Request body must include total_inventory."}, 400
         new_video = Video(title=request_body["title"],
-                        release_date=request_body["release_date"],
-                        total_inventory=request_body["total_inventory"])
+                          release_date=request_body["release_date"],
+                          total_inventory=request_body["total_inventory"])
         db.session.add(new_video)
         db.session.commit()
         new_video_response = {
@@ -215,11 +213,9 @@ def delete_video(id):
     return {"id": video.id}, 200
 
 
-
 # --------------------------------
 # ----------- RENTALS ----------
 # --------------------------------
-
 
 
 # CHECK OUT A VIDEO TO A CUSTOMER
@@ -296,7 +292,8 @@ def rentals_by_video(id):
     customer = Customer.query.get(id)
     if customer is None:
         return jsonify({"message": f"Customer {id} was not found"}), 404
-    rentals = Rental.query.filter_by(customer_id=customer.id, checked_out=True).all()
+    rentals = Rental.query.filter_by(
+        customer_id=customer.id, checked_out=True).all()
     rentals_response = []
     for rental in rentals:
         video_id = rental.video_id
